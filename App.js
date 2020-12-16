@@ -11,6 +11,14 @@ import { authorize } from 'react-native-app-auth';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import Client from 'fhir-kit-client';
 
+const fakeAuthResult = {
+  auth: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum"
+}
+
+const fakePatient = {
+  patient: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum"
+}
+
 const fhirIss ='https://launch.smarthealthit.org/v/r4/sim/eyJrIjoiMSIsImIiOiI2ODk4OTJiZC1kY2JlLTQxZmMtODY1MS0zOGExZDA4OTM4NTQifQ/fhir';
 
 const initializeFhirClient = (baseUrl, accessToken) => {
@@ -77,10 +85,11 @@ const App = () => {
         style={styles.scrollView}
       >
         <View style={styles.body}>
-        { patient
-          ? <PatientView patient={patient} />
+          <PatientView authResult={fakeAuthResult} patient={fakePatient}/>
+        {/* { patient
+          ? <PatientView authResult={authResult} patient={patient} />
           : <Login  handleAuthorize={handleAuthorize} />
-        }
+        } */}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -91,24 +100,42 @@ const Login = ({ handleAuthorize }) => (
   <Button title="Login" onPress={handleAuthorize} />
 );
 
-const PatientView = ({ patient }) => {
-  console.log('in PatientView');
+const PatientView = ({ authResult, patient }) => {
   return (
-    <Text>
-      Patient:
-      {JSON.stringify(patient, null, 2)}
-    </Text>
+    <View style={styles.sectionContainer}>
+      <View style={styles.section}>
+        <Text>Authorization Result:</Text>
+        <View>
+          <Text style={styles.text}>{JSON.stringify(authResult, null, 2)}</Text>
+        </View>
+      </View>
+      <View style={styles.section}>
+        <Text>Patient:</Text>
+        <View>
+          <Text style={styles.text}>{JSON.stringify(patient, null, 2)}</Text>
+        </View>
+      </View>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
+  safeAreaView: {
+    flex: 1
   },
-  body: {
-    backgroundColor: Colors.white,
-    justifyContent: 'center',
-    minHeight: 300
+  scrollView: {
+    padding: 20
+  },
+  sectionContainer: {
+    justifyContent: 'space-between',
+  },
+  section: {
+    overflow: 'scroll',
+    marginVertical: 10
+  },
+  text: {
+    borderWidth: 1,
+    padding: 20,
   }
 });
 
