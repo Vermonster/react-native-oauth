@@ -4,7 +4,6 @@ import {
   StyleSheet,
   ScrollView,
   View,
-  StatusBar,
   Button,
   Text
 } from 'react-native';
@@ -13,10 +12,6 @@ import { Colors } from 'react-native/Libraries/NewAppScreen';
 import Client from 'fhir-kit-client';
 
 const fhirIss ='https://launch.smarthealthit.org/v/r4/sim/eyJrIjoiMSIsImIiOiI2ODk4OTJiZC1kY2JlLTQxZmMtODY1MS0zOGExZDA4OTM4NTQifQ/fhir';
-
-// const fhirClient = new Client({
-//   baseUrl: fhirIss
-// });
 
 const initializeFhirClient = (baseUrl, accessToken) => {
   if(!accessToken) {
@@ -34,27 +29,20 @@ const App = () => {
   const [authResult, setAuthResult] = useState(null);
   const [patient, setPatient] = useState(null);
   console.log('authResult', authResult);
+  console.log('patient', patient);
 
   useEffect(() => {
     if(authResult && !patient) {
-      console.log('calling useEffect');
       const { accessToken, tokenAdditionalParameters: { patient: patientId }} = authResult;
       const fhirClient = initializeFhirClient(fhirIss, accessToken);
 
-      fhirClient
-        .read({
-          resourceType: 'Patient',
-          id: patientId
-        })
-        .then((res) => {
-          console.log('response', res);
-          setPatient(res)
-        })
-        .catch(e => console.log('error', e))
+      const queryPatient = async () => {
+        const patient = await fhirClient.read({ resourceType: 'Patient', id: patientId });
+        setPatient(patient)
+      }
+      queryPatient();
     }
-  }, [authResult, patient]);
-
-  console.log('patient', patient);
+  }, [authResult, patient])
 
   const handleAuthorize = async () => {
     const fhirClient = initializeFhirClient(fhirIss);
@@ -70,7 +58,7 @@ const App = () => {
       },
       clientId: 'example-client-id',
       clientSecret: 'example-client-secret',
-      redirectUrl: 'org.reactjs.native.example.ReactNativeOauth:/oauthredirect',
+      redirectUrl: 'org.reactjs.native.example.ReactNativeOauth:/callback',
       scopes: ['openid', 'fhirUser', 'patient/*.*', 'launch/patient', 'online_access']
     };
 
@@ -83,24 +71,35 @@ const App = () => {
   };
 
   return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}
-        >
-          <View style={styles.body}>
-            <Button title="Login" onPress={handleAuthorize} />
-          </View>
-          <Text>
-            {patient}
-          </Text>
-        </ScrollView>
-      </SafeAreaView>
-    </>
+    <SafeAreaView>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={styles.scrollView}
+      >
+        <View style={styles.body}>
+        { patient
+          ? <PatientView patient={patient} />
+          : <Login  handleAuthorize={handleAuthorize} />
+        }
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
+
+const Login = ({ handleAuthorize }) => (
+  <Button title="Login" onPress={handleAuthorize} />
+);
+
+const PatientView = ({ patient }) => {
+  console.log('in PatientView');
+  return (
+    <Text>
+      Patient:
+      {JSON.stringify(patient, null, 2)}
+    </Text>
+  )
+}
 
 const styles = StyleSheet.create({
   scrollView: {
@@ -108,6 +107,8 @@ const styles = StyleSheet.create({
   },
   body: {
     backgroundColor: Colors.white,
+    justifyContent: 'center',
+    minHeight: 300
   }
 });
 
