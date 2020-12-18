@@ -92,9 +92,17 @@ const App = () => {
     <SafeAreaView>
         <View style={styles.logoContainer}>
           <Image 
-            style={styles.logo} 
-            source={{ uri: 'https://res-4.cloudinary.com/crunchbase-production/image/upload/c_lpad,f_auto,q_auto:eco/v1397189173/306174efaed0d5bcf9c7f16ea3d9ac95.jpg'}} 
+            style={styles.vlogo} 
+            source={require('./assets/images/vermonster-logo.png')}
+            resizeMode='contain' 
           />
+          <Image 
+            style={styles.slogo} 
+            source={{ uri: 'http://syncfor.science/s4s-logo.png'}} 
+            resizeMode='contain'
+          />
+        </View>
+        <View style={styles.description}>
           <Text >SMART + OAuth2 Demo</Text>
         </View>
       <ScrollView
@@ -168,7 +176,6 @@ const styles = StyleSheet.create({
   },
   section: {
     overflow: 'scroll',
-    marginVertical: 10,
     backgroundColor: 'white',
     padding: 10,
     borderRadius: 10
@@ -177,12 +184,17 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 10
   },
-  logo: {
-    height: 100,
+  vlogo: {
+    height: 50,
+    width: "60%",
+  },
+  slogo: {
+    height: 50,
     width: "60%"
   },
   logoContainer: {
     alignItems: 'center',
+    marginTop: 25,
     marginBottom: 25
   },
   login: {
@@ -191,7 +203,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    width: "50%"
+    width: "50%",
+    marginTop: 100
   },
   loginText: {
     color: 'white',
@@ -208,6 +221,9 @@ const styles = StyleSheet.create({
   },
   togglePatientDescription: {
     margin: 10
+  },
+  description: {
+    alignItems: 'center',
   }
 });
 
