@@ -7,7 +7,8 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  Switch
+  Switch,
+  Platform
 } from 'react-native';
 import { authorize } from 'react-native-app-auth';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
@@ -76,10 +77,11 @@ const App = () => {
       },
       clientId: 'example-client-id',
       clientSecret: 'example-client-secret',
-      redirectUrl: 'org.reactjs.native.example.ReactNativeOauth:/callback',
+      redirectUrl: Platform.OS === 'android' ? 'com.reactnativeoauth:/callback' : 'org.reactjs.native.example.ReactNativeOauth:/callback',
       scopes: ['openid', 'fhirUser', 'patient/*.*', 'launch/patient', 'online_access']
     };
 
+    
     try {
       const result = await authorize(config);
       setAuthResult(result);
@@ -87,9 +89,13 @@ const App = () => {
       console.log('error', error);
     }
   };
-
+  
   return (
     <SafeAreaView>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={styles.scrollView}
+      >
         <View style={styles.logoContainer}>
           <Image 
             style={styles.vlogo} 
@@ -105,10 +111,6 @@ const App = () => {
         <View style={styles.description}>
           <Text >SMART + OAuth2 Demo</Text>
         </View>
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={styles.scrollView}
-      >
         <View>
           {/* <PatientView authResult={fakeAuthResult} patient={fakePatient}/> */}
         { patient
@@ -143,13 +145,13 @@ const PatientView = ({ authResult, patient }) => {
     <View style={styles.sectionContainer}>
       <View style={styles.section}>
         <Text style={styles.title}>Authorization Result:</Text>
-        <ScrollView style={styles.scrollViewInternal}>
+        <ScrollView style={styles.scrollViewInternal} nestedScrollEnabled={true}>
           <Text style={styles.text}>{JSON.stringify(authResult, null, 2)}</Text>
         </ScrollView>
       </View>
       <View style={styles.section}>
         <Text style={styles.title}>Patient:</Text>
-        <ScrollView style={styles.scrollViewInternal}>
+        <ScrollView style={styles.scrollViewInternal} nestedScrollEnabled={true}>
           <Text>{JSON.stringify(patient, null, 2)}</Text>
         </ScrollView>
       </View>
